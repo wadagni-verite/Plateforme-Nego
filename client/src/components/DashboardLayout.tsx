@@ -21,15 +21,20 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users } from "lucide-react";
+import { LayoutDashboard, LogOut, PanelLeft, Users, FileText, History, Search, Shield, BarChart3, Globe } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Page 1", path: "/" },
-  { icon: Users, label: "Page 2", path: "/some-path" },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/", labelKey: "nav.dashboard" },
+  { icon: FileText, label: "Documents", path: "/documents", labelKey: "nav.documents" },
+  { icon: History, label: "Timeline", path: "/timeline", labelKey: "nav.timeline" },
+  { icon: Search, label: "Search", path: "/search", labelKey: "nav.search" },
+  { icon: Users, label: "Actors", path: "/actors", labelKey: "nav.actors", adminOnly: true },
+  { icon: Shield, label: "Audit", path: "/audit", labelKey: "nav.audit" },
+  { icon: BarChart3, label: "Case", path: "/case", labelKey: "nav.case", adminOnly: true },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
@@ -170,9 +175,17 @@ function DashboardLayoutContent({
               </button>
               {!isCollapsed ? (
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="font-semibold tracking-tight truncate">
-                    Navigation
-                  </span>
+                  <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center shrink-0">
+                    <Shield className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <span className="font-semibold tracking-tight text-sm block leading-tight">
+                      War Room
+                    </span>
+                    <span className="text-xs text-muted-foreground leading-tight">
+                      Legal
+                    </span>
+                  </div>
                 </div>
               ) : null}
             </div>
@@ -180,7 +193,7 @@ function DashboardLayoutContent({
 
           <SidebarContent className="gap-0">
             <SidebarMenu className="px-2 py-1">
-              {menuItems.map(item => {
+              {menuItems.filter(item => !item.adminOnly || user?.role === "admin").map(item => {
                 const isActive = location === item.path;
                 return (
                   <SidebarMenuItem key={item.path}>
